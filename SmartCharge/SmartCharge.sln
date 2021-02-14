@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartCharge", "SmartCharge.csproj", "{CBBC2A1A-648D-4F9D-AEC2-76DAAAA5E3D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartCharge.Core", "..\SmartCharge.Core\SmartCharge.Core.csproj", "{E7AF2AC6-3D6A-49D8-8562-DD9977F6D2CF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CBBC2A1A-648D-4F9D-AEC2-76DAAAA5E3D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBBC2A1A-648D-4F9D-AEC2-76DAAAA5E3D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBBC2A1A-648D-4F9D-AEC2-76DAAAA5E3D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBBC2A1A-648D-4F9D-AEC2-76DAAAA5E3D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7AF2AC6-3D6A-49D8-8562-DD9977F6D2CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7AF2AC6-3D6A-49D8-8562-DD9977F6D2CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7AF2AC6-3D6A-49D8-8562-DD9977F6D2CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7AF2AC6-3D6A-49D8-8562-DD9977F6D2CF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {435B6FCD-D770-4F7B-A284-91616D34B88D}
+	EndGlobalSection
+EndGlobal
