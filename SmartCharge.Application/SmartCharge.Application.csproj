@@ -5,7 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Domain\Domain.csproj" />
       <ProjectReference Include="..\SmartCharge.Core\SmartCharge.Core.csproj" />
     </ItemGroup>
 

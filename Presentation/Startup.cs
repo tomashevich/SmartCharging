@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using SmartCharge.Infrastructure.Mongo;
 
 namespace Presentation
 {
@@ -22,6 +24,13 @@ namespace Presentation
         {
             services.AddApplication();
             services.AddInfrastructure(Configuration);
+
+            // requires using Microsoft.Extensions.Options
+            services.Configure<DatabaseSettings>(
+                Configuration.GetSection(nameof(DatabaseSettings)));
+
+            services.AddSingleton<IDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<DatabaseSettings>>().Value);
             services.AddControllers();
 
             services.AddSwaggerGen(config =>

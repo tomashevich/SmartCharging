@@ -11,7 +11,7 @@ namespace SmartCharge.Core.Repositories
     {
         Task<ChargeGroup> GetAsync(Guid chargeGroupId);
         Task<bool> ExistsAsync(Guid chargeGroupId);
-        Task AddAsync(ChargeGroup chargeGroup);
+        void Add(ChargeGroup chargeGroup);
         Task UpdateAsync(ChargeGroup chargeGroup);
         Task DeleteAsync(Guid chargeGroupId);
     }

@@ -3,6 +3,8 @@ using Application.Posts;
 using Infrastructure.JsonPlaceholderApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SmartCharge.Core.Repositories;
+using SmartCharge.Infrastructure.Mongo.Repositories;
 
 namespace Infrastructure
 {
@@ -17,7 +19,9 @@ namespace Infrastructure
             });
 
             services.AddTransient<IPostsApi, PostsApi>();
-            
+        
+            services.AddTransient<IChargeGroupRepository, ChargeGroupRepository>();
+
             return services;
         }
     }
