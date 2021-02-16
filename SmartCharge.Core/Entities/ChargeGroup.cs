@@ -31,6 +31,7 @@ namespace SmartCharge.Core.Entities
             Name = NameGuard(name);
             CapacityAmps = CapacityGuard(capacityAmps);
             ChargeStations = Enumerable.Empty<ChargeStation>();
+           
         }
 
         public static ChargeGroup Create(Guid id, string name, decimal capacityAmps)

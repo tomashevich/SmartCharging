@@ -8,14 +8,13 @@ namespace SmartCharge.Infrastructure.Mongo.Documents
     internal static class Extensions
     {
         public static ChargeGroup AsEntity(this ChargeGroupDocument document)
-            => new ChargeGroup(new Guid(document.Id), document.Name, document.CapacityAmps
-                );
+            => new ChargeGroup(new Guid(document.Id), document.Name, document.CapacityAmps);
 
         public static ChargeGroupDocument AsDocument(this ChargeGroup entity)
             => new ChargeGroupDocument
             {
                 Id = entity.Id.ToString(),
-                Version = entity.Version,
+  
                 Name = entity.Name,
                 CapacityAmps = entity.CapacityAmps
                 //Reservations = entity.Reservations.Select(r => new ChargeStationDocument

@@ -8,12 +8,12 @@ using SmartCharge.Application.Queries;
 
 namespace Presentation.Controllers
 {
-    public class ChargeGroupController : BaseController
+    public class ChargeStationController : BaseController
     {
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<IEnumerable<GetChargeGroupDto>>> GetChargeGroup(Guid id)
+        public async Task<ActionResult<IEnumerable<GetChargeGroupDto>>> GetChargeStation(Guid id)
         {
             var response = await Mediator.Send(new GetChargeGroupQuery{ Id = id});
 
@@ -22,17 +22,17 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [Route("Create")]
-        public async Task<ActionResult<AddChargeGroupDto>> CreateChargeGroup(AddChargeGroupCommand command)
+        public async Task<ActionResult<AddChargeGroupDto>> CreateChargeStation(AddChargeGroupCommand command)
         {
             var response = await Mediator.Send(command);
 
-            return CreatedAtAction(nameof(CreateChargeGroup), response);
+            return CreatedAtAction(nameof(CreateChargeStation), response);
         }
 
 
         [HttpPost]
         [Route("{id}")]
-        public async Task<ActionResult<IEnumerable<UpdateChargeGroupDto>>> UpdateChargeGroup(Guid id, [FromBody] UpdateChargeGroupRequest request)
+        public async Task<ActionResult<IEnumerable<UpdateChargeGroupDto>>> UpdateChargeStation(Guid id, [FromBody] UpdateChargeGroupRequest request)
         {
             var response = await Mediator.Send(new UpdateChargeGroupCommand { Id = id, Name = request.Name, Capacity= request.CapacityAmps});
 
@@ -41,7 +41,7 @@ namespace Presentation.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<ActionResult<bool> >DeleteChargeGroup(Guid id)
+        public async Task<ActionResult<bool> >DeleteChargeStation(Guid id)
         {
             var response = await Mediator.Send(new DeleteChargeGroupCommand { Id = id });
 

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SmartCharge.Application.Posts.Commands.ChargeGroupCommands
+namespace SmartCharge.Application.Commands.ChargeGroupCommands
 {
      public class AddChargeGroupDto : IMapFrom<ChargeGroup>
     {

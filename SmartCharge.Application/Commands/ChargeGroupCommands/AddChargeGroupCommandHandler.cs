@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
 using SmartCharge.Application.Exceptions;
-using SmartCharge.Application.Posts.Commands.ChargeGroupCommands;
 using SmartCharge.Core.Entities;
 using SmartCharge.Core.Repositories;
 using System.Threading;
