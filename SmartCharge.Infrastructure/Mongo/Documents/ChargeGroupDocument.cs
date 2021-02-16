@@ -10,11 +10,11 @@ namespace SmartCharge.Infrastructure.Mongo.Documents
     internal sealed class ChargeGroupDocument 
     {
         [BsonId]
-      //  [BsonRepresentation(BsonType.ObjectId)]
-        public Guid Id { get; set; }
+       // [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
         public int Version { get; set; }
 
-        [BsonElement("Name")]
+       // [BsonElement("Name")]
         public string Name { get; set; }
 
         public decimal CapacityAmps { get; set; }

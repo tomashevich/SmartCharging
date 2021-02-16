@@ -18,15 +18,8 @@ namespace Presentation.Controllers
             return Ok(response);
         }
 
-        //[HttpPost]
-        //public async Task<ActionResult<CreatePostDto>> CreatePost(CreatePostCommand command)
-        //{
-        //    var response = await Mediator.Send(command);
-
-        //    return CreatedAtAction(nameof(CreatePost), response);
-        //}
-
         [HttpPost]
+        [Route("Create")]
         public async Task<ActionResult<AddChargeGroupDto>> CreateChargeGroup(AddChargeGroupCommand command)
         {
             var response = await Mediator.Send(command);

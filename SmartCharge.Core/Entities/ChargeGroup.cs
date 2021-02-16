@@ -11,8 +11,6 @@ namespace SmartCharge.Core.Entities
     {
         private ISet<ChargeStation> _chargeStations = new HashSet<ChargeStation>();
 
-        public Guid Id { get; }
-
         public string Name { get; set; }
 
         public decimal CapacityAmps { get; set; }
@@ -30,16 +28,15 @@ namespace SmartCharge.Core.Entities
             private set => _chargeStations = new HashSet<ChargeStation>(value);
         }
 
-        public ChargeGroup(Guid id, string name, decimal capacityAmps)
+        public ChargeGroup(Guid id,string name, decimal capacityAmps)
         {
 
-            Id = IdGuard(id);
+            Id =IdGuard(id);
             Name = NameGuard(name);
             CapacityAmps = CapacityGuard(capacityAmps);
             ChargeStations = Enumerable.Empty<ChargeStation>();
 
         }
-
         public static ChargeGroup Create(Guid id, string name, decimal capacityAmps)
         {
             var chargeGroup = new ChargeGroup(id, name, capacityAmps);

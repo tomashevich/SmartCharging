@@ -9,10 +9,10 @@ namespace SmartCharge.Application.Commands.ChargeGroupCommands
     public class AddChargeGroupCommand : IRequest<AddChargeGroupDto>
 
     {
-        public Guid Id { get; }
-        public string Name { get; }
+        public Guid Id { get; set; }
+        public string Name { get; set; }
 
-        public decimal Capacity { get; }
+        public decimal Capacity { get; set; }
 
         //public AddChargeGroupCommand(Guid id, string name, decimal capacity)
         //    => (Id, Name, Capacity) = 

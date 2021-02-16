@@ -11,7 +11,7 @@ namespace SmartCharge.Application.Posts.Commands.ChargeGroupCommands
     {
         //private ISet<ChargeStation> _chargeStations = new HashSet<ChargeStation>();
 
-        public Guid Id { get; }
+        public Guid Id { get; set; }
 
         public string Name { get; set; }
 
@@ -21,7 +21,8 @@ namespace SmartCharge.Application.Posts.Commands.ChargeGroupCommands
 
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<ChargeGroup, AddChargeGroupDto>();
+            profile.CreateMap<ChargeGroup, AddChargeGroupDto>()
+                ;
         }
     }
 }

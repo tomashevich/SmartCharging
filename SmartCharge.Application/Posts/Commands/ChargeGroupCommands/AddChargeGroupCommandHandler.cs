@@ -28,7 +28,7 @@ namespace SmartCharge.Application.Commands.ChargeGroupCommands
             //    throw new ChargeGroupAlreadyExistException(command.Id);
             //}
 
-            var resource = ChargeGroup.Create(command.Id, command.Name, command.Capacity);
+            var resource = ChargeGroup.Create( command.Id, command.Name, command.Capacity);
             _repository.Add(resource);
             return _mapper.Map<AddChargeGroupDto>(resource);
         }
@@ -40,7 +40,7 @@ namespace SmartCharge.Application.Commands.ChargeGroupCommands
             //    throw new ChargeGroupAlreadyExistException(command.Id);
             //}
 
-            var resource = ChargeGroup.Create(command.Id, command.Name, command.Capacity);
+            var resource = ChargeGroup.Create( command.Id, command.Name, command.Capacity);
             //await _repository.AddAsync(resource);
          
         }
