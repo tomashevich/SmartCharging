@@ -23,28 +23,15 @@ namespace SmartCharge.Application.Commands.ChargeGroupCommands
 
         public async Task<AddChargeGroupDto> Handle(AddChargeGroupCommand command, CancellationToken cancellationToken)
         {
-            //if (await _repository.ExistsAsync(command.Id))
-            //{
-            //    throw new ChargeGroupAlreadyExistException(command.Id);
-            //}
+            if (await _repository.ExistsAsync(command.Id).ConfigureAwait(false))
+            {
+                throw new ChargeGroupAlreadyExistException(command.Id);
+            }
 
             var resource = ChargeGroup.Create( command.Id, command.Name, command.Capacity);
-            _repository.Add(resource);
+            await _repository.AddAsync(resource).ConfigureAwait(false);
             return _mapper.Map<AddChargeGroupDto>(resource);
         }
-
-        public async Task HandleAsync(AddChargeGroupCommand command)
-        {
-            //if (await _repository.ExistsAsync(command.Id))
-            //{
-            //    throw new ChargeGroupAlreadyExistException(command.Id);
-            //}
-
-            var resource = ChargeGroup.Create( command.Id, command.Name, command.Capacity);
-            //await _repository.AddAsync(resource);
-         
-        }
-
-       
+              
     }
 }

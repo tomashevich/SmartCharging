@@ -22,44 +22,48 @@ namespace SmartCharge.Infrastructure.Mongo.Repositories
             _documents = database.GetCollection<ChargeGroupDocument>(settings.CollectionName);
         }
 
-        public Task<ChargeGroup> GetAsync(Guid chargeGroupId)
+        public async Task<ChargeGroup> GetAsync(Guid chargeGroupId)
         {
-            throw new NotImplementedException();
+            var result = await _documents.FindAsync(x => x.Id == chargeGroupId.ToString()).ConfigureAwait(false);
+            return result.FirstOrDefault()?.AsEntity();
         }
 
-        public Task<bool> ExistsAsync(Guid chargeGroupId)
+        public async Task<bool> ExistsAsync(Guid chargeGroupId)
         {
-            throw new NotImplementedException();
+            var result = await _documents.FindAsync(rec => rec.Id == chargeGroupId.ToString()).ConfigureAwait(false);
+            return result.Any();
         }
 
-        public void Add(ChargeGroup chargeGroup)
+        public async Task AddAsync(ChargeGroup chargeGroup)
         {
 
-            _documents.InsertOne(chargeGroup.AsDocument());
+           await  _documents.InsertOneAsync(chargeGroup.AsDocument()).ConfigureAwait(false);
            
         }
 
-        public Task UpdateAsync(ChargeGroup chargeGroup)
+        public async Task UpdateAsync(ChargeGroup chargeGroup)
         {
-            throw new NotImplementedException();
+            await _documents.FindOneAndUpdateAsync(
+                    Builders<ChargeGroupDocument>.Filter.Where(rec => rec.Id == chargeGroup.Id.ToString()),
+                    Builders<ChargeGroupDocument>.Update
+                    .Set(rec => rec.Name, chargeGroup.Name)
+                    .Set(rec => rec.CapacityAmps, chargeGroup.CapacityAmps),
+                    options: new FindOneAndUpdateOptions<ChargeGroupDocument>
+                    {
+                        ReturnDocument = ReturnDocument.After
+                    }
+                ).ConfigureAwait(false);
         }
 
-        public Task DeleteAsync(Guid chargeGroupId)
+        public async Task <long> DeleteAsync(Guid chargeGroupId)
         {
-            throw new NotImplementedException();
+            var result = await _documents.DeleteOneAsync(x => x.Id == chargeGroupId.ToString()).ConfigureAwait(false);
+            return result.DeletedCount;
         }
 
-        //public async Task<Resource> GetAsync(AggregateId id)
-        //{
-        //    var document = await _repository.GetAsync(r => r.Id == id);
-        //    return document?.AsEntity();
-        //}
 
-        //public Task<bool> ExistsAsync(AggregateId id)
-        //    => _repository.ExistsAsync(r => r.Id == id);
 
-        //public Task AddAsync(Resource resource)
-        //    => _repository.AddAsync(resource.AsDocument());
+
 
         //public Task UpdateAsync(Resource resource)
         //    => _repository.Collection.ReplaceOneAsync(r => r.Id == resource.Id && r.Version < resource.Version,

@@ -19,42 +19,48 @@ namespace SmartCharge.Core.Entities
 
         private decimal GetCapacityReserve() => CapacityAmps - _chargeStations.Aggregate(0m, (total, next) => total + next.MaxCurrentAmps);
 
-        
-
-
         public IEnumerable<ChargeStation> ChargeStations
         {
             get => _chargeStations;
             private set => _chargeStations = new HashSet<ChargeStation>(value);
         }
 
-        public ChargeGroup(Guid id,string name, decimal capacityAmps)
+        public ChargeGroup(Guid id, string name, decimal capacityAmps)
         {
-
-            Id =IdGuard(id);
+            Id = IdGuard(id);
             Name = NameGuard(name);
             CapacityAmps = CapacityGuard(capacityAmps);
             ChargeStations = Enumerable.Empty<ChargeStation>();
-
         }
+
         public static ChargeGroup Create(Guid id, string name, decimal capacityAmps)
         {
             var chargeGroup = new ChargeGroup(id, name, capacityAmps);
             chargeGroup.AddEvent(new ChargeGroupCreated(chargeGroup));
             return chargeGroup;
         }
-        public void UpdateName(string name)
+
+        public void Update(string name, decimal capacityAmps)
         {
             Name = NameGuard(name);
+
+            if (capacityAmps != CapacityAmps)
+            {
+                UpdateCapacity(capacityAmps);
+            }
+
             AddEvent(new ChargeGroupUpdated(this));
+                       
         }
 
+      
         public void UpdateCapacity(decimal capacityAmps)
         {
             //todo: check if possible in case of reducing
             CapacityAmps = CapacityGuard(capacityAmps);
-            AddEvent(new ChargeGroupUpdated(this));
+            
         }
+
         public void AddChargeStation(ChargeStation chargeStation)
         {
             //todo: check capacity
