@@ -28,7 +28,7 @@ namespace SmartCharge.Core
         {
             int inputLenght = SortedConnectors.Count;
             decimal minPossibleAmps = int.MaxValue;
-           
+
 
             //look up for singles
             for (var i = 0; i < inputLenght; i++)
@@ -52,9 +52,9 @@ namespace SmartCharge.Core
 
             //look up for pairs
 
-            for (var i = 0; i < inputLenght-1; i++)
+            for (var i = 0; i < inputLenght - 1; i++)
             {
-                for (var j = i+1; j < inputLenght; j++)
+                for (var j = i + 1; j < inputLenght; j++)
                 {
                     var connectorI = (Connector)SortedConnectors[i];
                     var connectorJ = (Connector)SortedConnectors[j];
@@ -110,6 +110,30 @@ namespace SmartCharge.Core
 
     public static class Extensions
     {
+        public static string ToResultString(this List<List<ConnectorToUnplug>> input)
+        {
+            var sb = new StringBuilder();
+            int i = 1;
+            sb.Append("[");
+            foreach (var option in input)
+            {
+
+                sb.Append("[");
+                foreach (var connector in option)
+                {
+                    sb.Append("{");
+                    sb.Append( "StationID"   + ':'  + $"{connector.StationId}"  + ',' );
+                    sb.Append( "ConnectorID" + ':' + $"{connector.ConnectorId}" + ',');
+                    sb.Append( "Capacity"    + ':' + $"{connector.Amps}");
+                    sb.Append("}");
+                }
+                sb.Append("]");
+                i++;
+            }
+            sb.Append("]");
+            return sb.ToString();
+        }
+
         public static void AddToList(this SortedList<decimal, List<Connector>> input, Connector connectorToAdd)
         {
             var key = connectorToAdd.MaxCurrentAmps;
@@ -137,6 +161,7 @@ namespace SmartCharge.Core
             }
         }
     }
+
 
     public struct ConnectorToUnplug
     {

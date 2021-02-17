@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using SmartCharge.Application.Exceptions;
+using SmartCharge.Core;
 using SmartCharge.Core.Entities;
 using SmartCharge.Core.Repositories;
 using System.Threading;
@@ -53,9 +54,8 @@ namespace SmartCharge.Application.Commands.ChargeStationCommands
                 return new AddChargeStationDto
                 {
                     IsError = true,
-                    ErrorMessage = "ChargeGroup capacity exceeded. You can unplug these connectors:",
+                    ErrorMessage = "ChargeGroup capacity exceeded. You can unplug these connectors:" + result.Suggestions.ToResultString(),
                     ConnectorsToUnplug = result.Suggestions
-
                 };
             }
 
