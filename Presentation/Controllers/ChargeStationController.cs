@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SmartCharge.Application.Commands.ChargeGroupCommands;
-
+using SmartCharge.Application.Commands.ChargeStationCommands;
 using SmartCharge.Application.Queries;
 
 namespace Presentation.Controllers
@@ -13,16 +13,16 @@ namespace Presentation.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<IEnumerable<GetChargeGroupDto>>> GetChargeStation(Guid id)
+        public async Task<ActionResult<IEnumerable<GetChargeStationDto>>> GetChargeStation(Guid id)
         {
-            var response = await Mediator.Send(new GetChargeGroupQuery{ Id = id});
+            var response = await Mediator.Send(new GetChargeStationQuery{ Id = id});
 
             return Ok(response);
         }
 
         [HttpPost]
         [Route("Create")]
-        public async Task<ActionResult<AddChargeGroupDto>> CreateChargeStation(AddChargeGroupCommand command)
+        public async Task<ActionResult<ChargeStationDto>> CreateChargeStation(AddChargeStationCommand command)
         {
             var response = await Mediator.Send(command);
 
@@ -31,10 +31,52 @@ namespace Presentation.Controllers
 
 
         [HttpPost]
-        [Route("{id}")]
-        public async Task<ActionResult<IEnumerable<UpdateChargeGroupDto>>> UpdateChargeStation(Guid id, [FromBody] UpdateChargeGroupRequest request)
+        [Route("{id}/change-name")]
+        public async Task<ActionResult<IEnumerable<UpdateChargeStationDto>>> UpdateChargeStationName(Guid id, [FromBody] UpdateChargeStationNameRequest request)
         {
-            var response = await Mediator.Send(new UpdateChargeGroupCommand { Id = id, Name = request.Name, Capacity= request.CapacityAmps});
+            var response = await Mediator.Send(new UpdateChargeStationNameCommand { Id = id, Name = request.Name });
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("{id}/add-connector")]
+        public async Task<ActionResult<IEnumerable<UpdateChargeStationDto>>> AddConnector(Guid id, [FromBody] ConnectorRequest request)
+        {
+            var response = await Mediator.Send(
+                new AddConnectorCommand { 
+                    ChargeStationId = id, 
+                    ConnectorId = request.ConnectorId, 
+                    ConnectorMaxCurrentAmps = request.MaxCurrentAmps });
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("{id}/change-connector")]
+        public async Task<ActionResult<IEnumerable<UpdateChargeStationDto>>> ChangeConnector(Guid id, [FromBody] ConnectorRequest request)
+        {
+            var response = await Mediator.Send(
+                new UpdateConnectorCommand
+                {
+                    ChargeStationId = id,
+                    ConnectorId = request.ConnectorId,
+                    ConnectorMaxCurrentAmps = request.MaxCurrentAmps
+                });
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("{id}/change-group")]
+        public async Task<ActionResult<IEnumerable<UpdateChargeStationDto>>> ChangeGroup(Guid id, [FromBody] ChangeGroupRequest request)
+        {
+            var response = await Mediator.Send(
+                new ChangeGroupCommand
+                {
+                    ChargeStationId = id,
+                    ChargeGroupId = request.ChargeGroupId
+                });
 
             return Ok(response);
         }
@@ -43,7 +85,7 @@ namespace Presentation.Controllers
         [Route("{id}")]
         public async Task<ActionResult<bool> >DeleteChargeStation(Guid id)
         {
-            var response = await Mediator.Send(new DeleteChargeGroupCommand { Id = id });
+            var response = await Mediator.Send(new DeleteChargeStationCommand { Id = id });
 
             return Ok(true);
         }

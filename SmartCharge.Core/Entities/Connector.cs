@@ -9,20 +9,20 @@ namespace SmartCharge.Core.Entities
     {
         
         public int Id { get; set; }
-        public int MaxCurrentMilliAmps { get; set; }
-        public decimal MaxCurrentAmps { get { return MaxCurrentMilliAmps / 1000; } }
+        //public int MaxCurrentMilliAmps { get; set; }
+        public decimal MaxCurrentAmps { get; set; }
         public Guid ParentChargeStationId { get; }
 
-        public Connector(int id, int maxCurrentMilliAmps, Guid parentChargeStationId)
+        public Connector(int id, decimal maxCurrentAmps, Guid parentChargeStationId)
         {
             Id = GuardId(id);
-            MaxCurrentMilliAmps = GuardMaxCurrrent(maxCurrentMilliAmps);
+            MaxCurrentAmps = GuardMaxCurrrent(maxCurrentAmps);
             ParentChargeStationId = parentChargeStationId;
         }
 
-        public void ChangeConnectorMaxCurrent(int maxCurrentMilliAmps)
+        public void ChangeConnectorMaxCurrent(decimal maxCurrentAmps)
         {
-            MaxCurrentMilliAmps = GuardMaxCurrrent(maxCurrentMilliAmps);
+            MaxCurrentAmps = GuardMaxCurrrent(maxCurrentAmps);
         }
 
         private int GuardId(int id)
@@ -34,13 +34,13 @@ namespace SmartCharge.Core.Entities
             return id;
         }
 
-        private static int GuardMaxCurrrent(int maxCurrentMilliAmps)
+        private static decimal GuardMaxCurrrent(decimal maxCurrentAmps)
         {
-            if (maxCurrentMilliAmps <= 0)
+            if (maxCurrentAmps <= 0)
             {
                 throw new InvalidConnectorMaxCurrent();
             }
-            return maxCurrentMilliAmps;
+            return maxCurrentAmps;
         }
     }
 }

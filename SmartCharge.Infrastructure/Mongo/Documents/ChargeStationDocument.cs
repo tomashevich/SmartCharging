@@ -1,8 +1,15 @@
+using MongoDB.Bson.Serialization.Attributes;
+using System.Collections.Generic;
+
 namespace SmartCharge.Infrastructure.Mongo.Documents
 {
     internal sealed class ChargeStationDocument
     {
-        public int TimeStamp { get; set; }
-        public int Priority { get; set; }
+        [BsonId]
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public IEnumerable<ConnectorDocument> Connectors { get; set; }
+        public string ChargeGroupId { get; set; }
+       
     }
 }

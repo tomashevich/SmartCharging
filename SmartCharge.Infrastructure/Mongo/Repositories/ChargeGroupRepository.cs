@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 using MongoDB.Driver;
@@ -12,42 +13,53 @@ namespace SmartCharge.Infrastructure.Mongo.Repositories
     internal sealed class ChargeGroupRepository : IChargeGroupRepository
     {
 
-        private readonly IMongoCollection<ChargeGroupDocument> _documents;
+        private readonly IMongoCollection<ChargeGroupDocument> _chargeGroupsDocuments;
+        private readonly IMongoCollection<ChargeStationDocument> _chargeStationDocuments;
 
         public ChargeGroupRepository(IDatabaseSettings settings)
         {
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
 
-            _documents = database.GetCollection<ChargeGroupDocument>(settings.CollectionName);
+            _chargeGroupsDocuments = database.GetCollection<ChargeGroupDocument>(settings.ChargeGroupCollectionName);
+            _chargeStationDocuments = database.GetCollection<ChargeStationDocument>(settings.ChargeStationCollectionName);
         }
 
         public async Task<ChargeGroup> GetAsync(Guid chargeGroupId)
         {
-            var result = await _documents.FindAsync(x => x.Id == chargeGroupId.ToString()).ConfigureAwait(false);
+            var result = await _chargeGroupsDocuments.FindAsync(x => x.Id == chargeGroupId.ToString()).ConfigureAwait(false);
             return result.FirstOrDefault()?.AsEntity();
         }
 
+        public async Task<ChargeGroup> GetAsyncExtended(Guid chargeGroupId)
+        {
+            var groupsCursor = await _chargeGroupsDocuments.FindAsync(x => x.Id == chargeGroupId.ToString()).ConfigureAwait(false);
+            var stationsCursor = await _chargeStationDocuments.FindAsync(x => x.ChargeGroupId == chargeGroupId.ToString()).ConfigureAwait(false);
+            var groupDocument = groupsCursor.FirstOrDefault();
+            return groupDocument?.AsEntityExtended(stationsCursor.ToEnumerable().Select(x => x.AsEntityExtended(groupDocument?.AsEntity() )));
+          
+        }
         public async Task<bool> ExistsAsync(Guid chargeGroupId)
         {
-            var result = await _documents.FindAsync(rec => rec.Id == chargeGroupId.ToString()).ConfigureAwait(false);
+            var result = await _chargeGroupsDocuments.FindAsync(rec => rec.Id == chargeGroupId.ToString()).ConfigureAwait(false);
             return result.Any();
         }
 
         public async Task AddAsync(ChargeGroup chargeGroup)
         {
 
-           await  _documents.InsertOneAsync(chargeGroup.AsDocument()).ConfigureAwait(false);
+           await  _chargeGroupsDocuments.InsertOneAsync(chargeGroup.AsDocument()).ConfigureAwait(false);
            
         }
 
         public async Task UpdateAsync(ChargeGroup chargeGroup)
         {
-            await _documents.FindOneAndUpdateAsync(
+            await _chargeGroupsDocuments.FindOneAndUpdateAsync(
                     Builders<ChargeGroupDocument>.Filter.Where(rec => rec.Id == chargeGroup.Id.ToString()),
                     Builders<ChargeGroupDocument>.Update
                     .Set(rec => rec.Name, chargeGroup.Name)
-                    .Set(rec => rec.CapacityAmps, chargeGroup.CapacityAmps),
+                    .Set(rec => rec.CapacityAmps, chargeGroup.CapacityAmps)
+                    .Set(rec => rec.ChargeStations, chargeGroup.ChargeStations.Select(c => c.Id.ToString())),
                     options: new FindOneAndUpdateOptions<ChargeGroupDocument>
                     {
                         ReturnDocument = ReturnDocument.After
@@ -57,7 +69,7 @@ namespace SmartCharge.Infrastructure.Mongo.Repositories
 
         public async Task <long> DeleteAsync(Guid chargeGroupId)
         {
-            var result = await _documents.DeleteOneAsync(x => x.Id == chargeGroupId.ToString()).ConfigureAwait(false);
+            var result = await _chargeGroupsDocuments.DeleteOneAsync(x => x.Id == chargeGroupId.ToString()).ConfigureAwait(false);
             return result.DeletedCount;
         }
 

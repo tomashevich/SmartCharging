@@ -23,7 +23,7 @@ namespace SmartCharge.Application.Queries
 
         public async Task<GetChargeGroupDto> Handle(GetChargeGroupQuery command, CancellationToken cancellationToken)
         {
-            var resource = await _repository.GetAsync(command.Id).ConfigureAwait(false);
+            var resource = await _repository.GetAsyncExtended(command.Id).ConfigureAwait(false);
            
             if (resource == null)
             {

@@ -21,7 +21,7 @@ namespace SmartCharge.Application.Commands.ChargeGroupCommands
 
         public async Task<UpdateChargeGroupDto> Handle(UpdateChargeGroupCommand command, CancellationToken cancellationToken)
         {
-            var resource = await _repository.GetAsync(command.Id);
+            var resource = await _repository.GetAsyncExtended(command.Id);
 
             if (resource == null)
             {

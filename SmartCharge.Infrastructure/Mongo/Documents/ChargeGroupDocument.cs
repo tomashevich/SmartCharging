@@ -12,12 +12,12 @@ namespace SmartCharge.Infrastructure.Mongo.Documents
         [BsonId]
        // [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
-        public int Version { get; set; }
+       
 
        // [BsonElement("Name")]
         public string Name { get; set; }
 
         public decimal CapacityAmps { get; set; }
-        public IEnumerable<ChargeStationDocument> ChargeStations { get; set; }
+        public IEnumerable<string> ChargeStations { get; set; }
     }
 }

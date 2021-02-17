@@ -13,6 +13,7 @@ namespace Infrastructure
           
         
             services.AddTransient<IChargeGroupRepository, ChargeGroupRepository>();
+            services.AddTransient<IChargeStationRepository, ChargeStationRepository>();
 
             return services;
         }

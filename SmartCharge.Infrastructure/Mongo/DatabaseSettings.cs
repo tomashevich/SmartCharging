@@ -6,14 +6,16 @@ namespace SmartCharge.Infrastructure.Mongo
 {
     public class DatabaseSettings : IDatabaseSettings
     {
-        public string CollectionName { get; set; }
+        public string ChargeGroupCollectionName { get; set; }
+        public string ChargeStationCollectionName { get; set; }
         public string ConnectionString { get; set; }
         public string DatabaseName { get; set; }
     }
 
     public interface IDatabaseSettings
     {
-        string CollectionName { get; set; }
+        string ChargeGroupCollectionName { get; set; }
+        string ChargeStationCollectionName { get; set; }
         string ConnectionString { get; set; }
         string DatabaseName { get; set; }
     }

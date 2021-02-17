@@ -14,19 +14,22 @@ namespace SmartCharge.Core.Entities
 
         private ISet<Connector> _connectors = new HashSet<Connector>();
 
-        public decimal MaxCurrentAmps { get; private set; }
+        public decimal MaxCurrentAmps { get
+            {
+              return  _connectors.Aggregate(0m, (total, next) => total + next.MaxCurrentAmps, total=>total);
+            } }
 
-        public Guid Id { get; }
+
 
         public string Name { get; set; }
 
-        public ChargeGroup ParentChargeGroup { get; }
+        public ChargeGroup ParentChargeGroup { get; set; }
 
 
         public IEnumerable<Connector> Connectors
         {
             get => _connectors;
-            private set => _connectors = new HashSet<Connector>(value);
+            set => _connectors = new HashSet<Connector>(value);
         }
 
         public ChargeStation(Guid id, string name, ChargeGroup parentChargeGroup)
@@ -38,13 +41,13 @@ namespace SmartCharge.Core.Entities
             ParentChargeGroup = parentChargeGroup;
         }
 
-        private int GetMaxCurrentMilliAmps() => _connectors.Aggregate(0, (total, next) => total + next.MaxCurrentMilliAmps);
+       
 
-        public static ChargeStation Create(Guid id, string name, int connectorMaxCurrent, ChargeGroup parentChargeGroup)
+        public static ChargeStation Create(Guid id, string name, ChargeGroup parentChargeGroup)
         {
             var chargeStation = new ChargeStation(id, name, parentChargeGroup);
             chargeStation.AddEvent(new ChargeStationCreated(chargeStation));
-            chargeStation.AddConnector(connectorMaxCurrent);
+            //chargeStation.AddConnector(connectorMaxCurrent);
             return chargeStation;
         }
 
@@ -55,16 +58,17 @@ namespace SmartCharge.Core.Entities
             AddEvent(new ChargeStationUpdated(this));
         }
 
-        public void AddConnector(int connectorMaxCurrent)
+        public void AddConnector(decimal connectorMaxCurrent, int connectorId = 0)
         {
-            
-            if (ParentChargeGroup.CapacityReserve > connectorMaxCurrent)
+
+            if (ParentChargeGroup.CapacityReserve >= connectorMaxCurrent)
             {
-                int id = GetNewConnectorId();
+                int id = GetNewConnectorId(connectorId);
                 if (_connectors.Count() < Const.MAX_CONNECTORS)
                 {
                     _connectors.Add(new Connector(id, connectorMaxCurrent, Id));
-                    MaxCurrentAmps = GetMaxCurrentMilliAmps() / 1000;
+                   
+                   
                     AddEvent(new ChargeStationUpdated(this));
                 }
                 else
@@ -77,33 +81,44 @@ namespace SmartCharge.Core.Entities
                 throw new ChargeGroupCapacityExceeded();
             }
         }
-        public void ChangeConnectorMaxCurrent(int connectorId, int newMaxCurrentMilliAmps)
+        public void ChangeConnectorMaxCurrent(int connectorId, decimal newMaxCurrentAmps)
         {
-            
+
             var connectorUnderChange = _connectors.FirstOrDefault(x => x.Id == connectorId);
             if (connectorUnderChange == null)
             {
                 throw new ConnectorNotFound(connectorId, Id);
             }
 
-            var maxCurrentDelta = newMaxCurrentMilliAmps - connectorUnderChange.MaxCurrentMilliAmps;
+            var maxCurrentDelta = newMaxCurrentAmps - connectorUnderChange.MaxCurrentAmps;
             if (ParentChargeGroup.CapacityReserve > maxCurrentDelta)
             {
-                connectorUnderChange.ChangeConnectorMaxCurrent(newMaxCurrentMilliAmps);
-                MaxCurrentAmps = GetMaxCurrentMilliAmps() / 1000;
+                connectorUnderChange.ChangeConnectorMaxCurrent(newMaxCurrentAmps);
+                //MaxCurrentAmps = GetMaxCurrentAmps();
                 AddEvent(new ChargeStationUpdated(this));
             }
             else { throw new ChargeGroupCapacityExceeded(); }
         }
 
-        private int GetNewConnectorId()
+        private int GetNewConnectorId(int connectorId)
         {
-            for (int i = 1; i <= Const.MAX_CONNECTOR_ID_VALUE; i++)
+            if (connectorId == 0)
             {
-                bool freeId = !_connectors.Any(x => x.Id == i);
-                if (freeId)
+
+                for (int i = 1; i <= Const.MAX_CONNECTOR_ID_VALUE; i++)
                 {
-                    return i;
+                    bool freeId = !_connectors.Any(x => x.Id == i);
+                    if (freeId)
+                    {
+                        return i;
+                    }
+                }
+            }
+            else 
+            {
+                if (!_connectors.Any(x => x.Id == connectorId))
+                {
+                    return connectorId;
                 }
             }
 
