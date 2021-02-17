@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SmartCharge.Core.Exceptions
 {
-    class InvalidConnectorId : DomainException
+    public class InvalidConnectorId : DomainException
     {
         public override string Code { get; } = "invalid_connector_id";
 

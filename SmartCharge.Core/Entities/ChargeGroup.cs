@@ -3,7 +3,6 @@ using SmartCharge.Core.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace SmartCharge.Core.Entities
 {
@@ -15,13 +14,15 @@ namespace SmartCharge.Core.Entities
 
         public decimal CapacityAmps { get; set; }
 
-        public decimal CapacityReserve { get 
-            { 
-                return CapacityAmps - _chargeStations.Aggregate(0m, (total, next) => total + next.MaxCurrentAmps, total => total); 
-            } 
+        public decimal CapacityReserve
+        {
+            get
+            {
+                return CapacityAmps - _chargeStations.Aggregate(0m, (total, next) => total + next.MaxCurrentAmps, total => total);
+            }
         }
 
-       // public void UpdateCapacityReserve() => CapacityReserve = ;
+    
 
         public IEnumerable<ChargeStation> ChargeStations
         {
@@ -29,13 +30,13 @@ namespace SmartCharge.Core.Entities
             private set => _chargeStations = new HashSet<ChargeStation>(value);
         }
 
-        public ChargeGroup(Guid id, string name, decimal capacityAmps, IEnumerable<ChargeStation> chargeStations )
+        public ChargeGroup(Guid id, string name, decimal capacityAmps, IEnumerable<ChargeStation> chargeStations)
         {
             Id = IdGuard(id);
             Name = NameGuard(name);
             CapacityAmps = CapacityGuard(capacityAmps);
-            ChargeStations = chargeStations ?? new  List<ChargeStation>();
-            
+            ChargeStations = chargeStations ?? new List<ChargeStation>();
+
         }
 
         public static ChargeGroup Create(Guid id, string name, decimal capacityAmps, IEnumerable<ChargeStation> chargeStations)
@@ -45,48 +46,84 @@ namespace SmartCharge.Core.Entities
             return chargeGroup;
         }
 
-        public void Update(string name, decimal capacityAmps)
+        public OperationResult Update(string name, decimal capacityAmps)
         {
+            var result = new OperationResult { IsError = false };
             Name = NameGuard(name);
 
             if (capacityAmps != CapacityAmps)
             {
-                UpdateCapacity(capacityAmps);
+                result = UpdateCapacity(capacityAmps);
             }
 
             AddEvent(new ChargeGroupUpdated(this));
-                       
+            return result;
         }
 
-      
-        public void UpdateCapacity(decimal capacityAmps)
+
+        public OperationResult UpdateCapacity(decimal newCapacityAmps)
         {
             //todo: check if possible in case of reducing
-            CapacityAmps = CapacityGuard(capacityAmps);
-           
+            var capacityReducedOnAmps = CapacityAmps - newCapacityAmps;
+
+            var needCheck = capacityReducedOnAmps > 0;
+            if (needCheck)
+            {
+                if (CapacityReserve > capacityReducedOnAmps)
+                {
+                    CapacityAmps = CapacityGuard(newCapacityAmps);
+                    return new OperationResult
+                    {
+                        IsError = false
+                    };
+                }
+                else
+                {
+                    return new OperationResult
+                    {
+                        IsError = true,
+                        Suggestions = new Algo().FindOptions(this, capacityReducedOnAmps - CapacityReserve)
+                    };
+                }
+            }
+
+            CapacityAmps = CapacityGuard(newCapacityAmps);
+            return new OperationResult
+            {
+                IsError = false
+            };
         }
 
-        public void AddChargeStation(ChargeStation chargeStation)
+        public OperationResult AddChargeStation(ChargeStation chargeStation)
         {
-            if (CapacityReserve > chargeStation.MaxCurrentAmps )
+            if (CapacityReserve > chargeStation.MaxCurrentAmps)
             {
                 _chargeStations.Add(chargeStation);
                 chargeStation.ParentChargeGroup = this;
                 AddEvent(new ChargeGroupUpdated(this));
+
+                return new OperationResult
+                {
+                    IsError = false
+                };
             }
             else
             {
-                throw new ChargeGroupCapacityExceeded();
+                return new OperationResult
+                {
+                    IsError = true,
+                    Suggestions = new Algo().FindOptions(this, chargeStation.MaxCurrentAmps - CapacityReserve)
+                };
             }
         }
         public void RemoveChargeStation(Guid chargeStationId)
         {
-            
-                var toRemove = _chargeStations.First(x=> x.Id == chargeStationId);
-                _chargeStations.Remove(toRemove);
-            
-                AddEvent(new ChargeGroupUpdated(this));
-           
+
+            var toRemove = _chargeStations.First(x => x.Id == chargeStationId);
+            _chargeStations.Remove(toRemove);
+
+            AddEvent(new ChargeGroupUpdated(this));
+
         }
 
         public void Delete()

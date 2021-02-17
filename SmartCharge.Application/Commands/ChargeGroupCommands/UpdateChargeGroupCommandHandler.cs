@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using SmartCharge.Application.Exceptions;
+using SmartCharge.Core;
 using SmartCharge.Core.Repositories;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +28,16 @@ namespace SmartCharge.Application.Commands.ChargeGroupCommands
             {
                 throw new ChargeGroupNotFoundException(command.Id);
             }
-            resource.Update( command.Name, command.Capacity);
+            var result = resource.Update( command.Name, command.Capacity);
+            if (result.IsError)
+            {
+                return new UpdateChargeGroupDto
+                {
+                    IsError = true,
+                    ErrorMessage = "ChargeGroup capacity exceeded. You can unplug these connectors:",
+                    ConnectorsToUnplug = result.Suggestions.ToResultString()
+                };
+            }
             await _repository.UpdateAsync(resource).ConfigureAwait(false);
             return _mapper.Map<UpdateChargeGroupDto>(resource);
         }

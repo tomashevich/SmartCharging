@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using SmartCharge.Application.Exceptions;
+using SmartCharge.Core;
 using SmartCharge.Core.Entities;
 using SmartCharge.Core.Repositories;
 using System.Threading;
@@ -40,7 +41,17 @@ namespace SmartCharge.Application.Commands.ChargeStationCommands
             }
 
             var oldGroupId = chargeStation.ParentChargeGroup.Id;
-            newGroup.AddChargeStation(chargeStation);
+            var result = newGroup.AddChargeStation(chargeStation);
+
+            if (result.IsError)
+            {
+                return new UpdateChargeStationDto
+                {
+                    IsError = true,
+                    ErrorMessage = "ChargeGroup capacity exceeded. You can unplug these connectors:",
+                    ConnectorsToUnplug = result.Suggestions.ToResultString()
+                };
+            }
 
             //find old group
             var oldGroup = await _groupRepository.GetAsyncExtended(oldGroupId).ConfigureAwait(false);

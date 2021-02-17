@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SmartCharge.Core.Exceptions
 {
-    class InvalidChargeGroupCapacity : DomainException
+    public class InvalidChargeGroupCapacity : DomainException
     {
         public override string Code { get; } = "invalid_charge_group_capacity";
 

@@ -18,8 +18,14 @@ namespace SmartCharge.Application.Commands.ChargeGroupCommands
 
         public decimal CapacityAmps { get; set; }
 
+
         public IEnumerable<ChargeStationDto> ChargeStations { get; set; }
         // public decimal CapacityReserve { get; private set; }
+
+        public bool IsError { get; set; }
+        public string ErrorMessage { get; set; }
+
+        public List<string> ConnectorsToUnplug { get; set; }
 
         public void Mapping(Profile profile)
         {

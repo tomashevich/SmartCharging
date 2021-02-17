@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartCharge.Application", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartCharge.Infrastructure", "..\SmartCharge.Infrastructure\SmartCharge.Infrastructure.csproj", "{D4394418-1B45-41E9-AD61-AEC400153DB2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartCharge.UnitTests", "SmartCharge.UnitTests\SmartCharge.UnitTests.csproj", "{502FE0A8-43FB-4FA0-AAE0-4D88ECFB7E9C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{D4394418-1B45-41E9-AD61-AEC400153DB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4394418-1B45-41E9-AD61-AEC400153DB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4394418-1B45-41E9-AD61-AEC400153DB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{502FE0A8-43FB-4FA0-AAE0-4D88ECFB7E9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{502FE0A8-43FB-4FA0-AAE0-4D88ECFB7E9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{502FE0A8-43FB-4FA0-AAE0-4D88ECFB7E9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{502FE0A8-43FB-4FA0-AAE0-4D88ECFB7E9C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

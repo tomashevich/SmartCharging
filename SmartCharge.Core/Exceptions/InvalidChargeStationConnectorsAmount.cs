@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SmartCharge.Core.Exceptions
 {
-    class InvalidChargeStationConnectorsAmount : DomainException
+    public class InvalidChargeStationConnectorsAmount : DomainException
     {
         public override string Code { get; } = "invalid_charge_station_connectors_amount";
 
