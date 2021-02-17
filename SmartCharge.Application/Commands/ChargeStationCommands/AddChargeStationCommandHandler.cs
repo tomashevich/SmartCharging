@@ -54,8 +54,8 @@ namespace SmartCharge.Application.Commands.ChargeStationCommands
                 return new AddChargeStationDto
                 {
                     IsError = true,
-                    ErrorMessage = "ChargeGroup capacity exceeded. You can unplug these connectors:" + result.Suggestions.ToResultString(),
-                    ConnectorsToUnplug = result.Suggestions
+                    ErrorMessage = "ChargeGroup capacity exceeded. You can unplug these connectors:",
+                    ConnectorsToUnplug = result.Suggestions.ToResultString()
                 };
             }
 

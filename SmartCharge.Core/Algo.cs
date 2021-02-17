@@ -110,15 +110,17 @@ namespace SmartCharge.Core
 
     public static class Extensions
     {
-        public static string ToResultString(this List<List<ConnectorToUnplug>> input)
+        public static List<string> ToResultString(this List<List<ConnectorToUnplug>> input)
         {
+            var result = new List<string>();
+
             var sb = new StringBuilder();
             int i = 1;
-            sb.Append("[");
+           
             foreach (var option in input)
             {
-
-                sb.Append("[");
+                result.Add($"Option {i}:");
+                result.Add("[");
                 foreach (var connector in option)
                 {
                     sb.Append("{");
@@ -126,12 +128,15 @@ namespace SmartCharge.Core
                     sb.Append( "ConnectorID" + ':' + $"{connector.ConnectorId}" + ',');
                     sb.Append( "Capacity"    + ':' + $"{connector.Amps}");
                     sb.Append("}");
+
+                    result.Add(sb.ToString());
+                    sb.Clear();
                 }
-                sb.Append("]");
+                result.Add("]");
                 i++;
             }
-            sb.Append("]");
-            return sb.ToString();
+            
+            return result;
         }
 
         public static void AddToList(this SortedList<decimal, List<Connector>> input, Connector connectorToAdd)

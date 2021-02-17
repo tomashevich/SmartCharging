@@ -19,7 +19,7 @@ namespace SmartCharge.Application.Commands.ChargeStationCommands
         public bool IsError { get; set; }
         public string ErrorMessage { get; set; }
 
-        public List<List<ConnectorToUnplug>> ConnectorsToUnplug { get; set; }
+        public List<string> ConnectorsToUnplug { get; set; }
 
         public void Mapping(Profile profile)
         {
