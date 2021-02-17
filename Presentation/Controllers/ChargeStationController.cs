@@ -54,7 +54,7 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [Route("{id}/change-connector")]
-        public async Task<ActionResult<IEnumerable<UpdateChargeStationDto>>> ChangeConnector(Guid id, [FromBody] ConnectorRequest request)
+        public async Task<ActionResult<UpdateChargeStationDto>> ChangeConnector(Guid id, [FromBody] ConnectorRequest request)
         {
             var response = await Mediator.Send(
                 new UpdateConnectorCommand
@@ -63,7 +63,7 @@ namespace Presentation.Controllers
                     ConnectorId = request.ConnectorId,
                     ConnectorMaxCurrentAmps = request.MaxCurrentAmps
                 });
-
+          
             return Ok(response);
         }
 

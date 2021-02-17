@@ -58,10 +58,10 @@ namespace SmartCharge.Core.Entities
             AddEvent(new ChargeStationUpdated(this));
         }
 
-        public void AddConnector(decimal connectorMaxCurrent, int connectorId = 0)
+        public OperationResult AddConnector(decimal connectorMaxCurrent, int connectorId = 0)
         {
-
-            if (ParentChargeGroup.CapacityReserve >= connectorMaxCurrent)
+            var reserve = ParentChargeGroup.CapacityReserve;
+            if (reserve  >= connectorMaxCurrent)
             {
                 int id = GetNewConnectorId(connectorId);
                 if (_connectors.Count() < Const.MAX_CONNECTORS)
@@ -70,6 +70,7 @@ namespace SmartCharge.Core.Entities
                    
                    
                     AddEvent(new ChargeStationUpdated(this));
+                    return new OperationResult { IsError = false };
                 }
                 else
                 {
@@ -78,10 +79,14 @@ namespace SmartCharge.Core.Entities
             }
             else
             {
-                throw new ChargeGroupCapacityExceeded();
+                return new OperationResult
+                {
+                    IsError = true,
+                    Suggestions = new Algo().FindOptions(ParentChargeGroup, connectorMaxCurrent - reserve)
+                };
             }
         }
-        public void ChangeConnectorMaxCurrent(int connectorId, decimal newMaxCurrentAmps)
+        public OperationResult ChangeConnectorMaxCurrent(int connectorId, decimal newMaxCurrentAmps)
         {
 
             var connectorUnderChange = _connectors.FirstOrDefault(x => x.Id == connectorId);
@@ -91,13 +96,24 @@ namespace SmartCharge.Core.Entities
             }
 
             var maxCurrentDelta = newMaxCurrentAmps - connectorUnderChange.MaxCurrentAmps;
-            if (ParentChargeGroup.CapacityReserve > maxCurrentDelta)
+            var reserve = ParentChargeGroup.CapacityReserve;
+            if (reserve > maxCurrentDelta)
             {
                 connectorUnderChange.ChangeConnectorMaxCurrent(newMaxCurrentAmps);
                 //MaxCurrentAmps = GetMaxCurrentAmps();
                 AddEvent(new ChargeStationUpdated(this));
+                return new OperationResult { IsError = false };
+
             }
-            else { throw new ChargeGroupCapacityExceeded(); }
+            else 
+            {
+                return new OperationResult
+                {
+                    IsError = true,
+                    Suggestions = new Algo().FindOptions(ParentChargeGroup, maxCurrentDelta - reserve)
+                };
+                //throw new ChargeGroupCapacityExceeded(); 
+            }
         }
 
         private int GetNewConnectorId(int connectorId)

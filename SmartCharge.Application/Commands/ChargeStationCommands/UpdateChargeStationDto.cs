@@ -1,5 +1,6 @@
 ﻿using Application.Common.Mappings;
 using AutoMapper;
+using SmartCharge.Core;
 using SmartCharge.Core.Entities;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,10 @@ namespace SmartCharge.Application.Commands.ChargeStationCommands
         public IEnumerable<Connector> Connectors { get; set; }
         public string ChargeGroupId { get; set; }
 
+        public bool IsError { get; set; }
+        public string ErrorMessage { get; set; }
+
+        public List<List<ConnectorToUnplug>> ConnectorsToUnplug { get; set; }
 
         public void Mapping(Profile profile)
         {

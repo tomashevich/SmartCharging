@@ -36,16 +36,20 @@ namespace SmartCharge.Application.Commands.ChargeStationCommands
             var chargeStation = await _stationRepository.GetAsyncExtended(command.ChargeStationId).ConfigureAwait(false);
 
 
-            chargeStation.ChangeConnectorMaxCurrent(command.ConnectorId, command.ConnectorMaxCurrentAmps);
+            var result = chargeStation.ChangeConnectorMaxCurrent(command.ConnectorId, command.ConnectorMaxCurrentAmps);
 
-    
+            if (result.IsError)
+            {
+                return new UpdateChargeStationDto
+                {
+                    IsError = true,
+                    ErrorMessage = "ChargeGroup capacity exceeded. You can unplug these connectors:",
+                    ConnectorsToUnplug = result.Suggestions
+
+                };
+            }
 
             await _stationRepository.UpdateConnectorsAsync(chargeStation).ConfigureAwait(false);
-
-            
-           
-            
-
             return _mapper.Map<UpdateChargeStationDto>(chargeStation);
         }
               

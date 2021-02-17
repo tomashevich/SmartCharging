@@ -46,11 +46,22 @@ namespace SmartCharge.Application.Commands.ChargeStationCommands
 
             chargeGroup.AddChargeStation(chargeStation);
             //add connector to station
-            chargeStation.AddConnector(command.ConnectorMaxCurrentAmps, command.ConnectorId);
+            var result = chargeStation.AddConnector(command.ConnectorMaxCurrentAmps, command.ConnectorId);
+
+            if (result.IsError)
+            {
+                return new AddChargeStationDto
+                {
+                    IsError = true,
+                    ErrorMessage = "ChargeGroup capacity exceeded. You can unplug these connectors:",
+                    ConnectorsToUnplug = result.Suggestions
+
+                };
+            }
 
             //save to db
-          
-                await _stationRepository.AddAsync(chargeStation).ConfigureAwait(false);
+
+            await _stationRepository.AddAsync(chargeStation).ConfigureAwait(false);
                 await _groupRepository.UpdateAsync(chargeGroup).ConfigureAwait(false);
             //todo: what about revert changes after fail
             

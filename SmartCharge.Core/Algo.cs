@@ -31,7 +31,7 @@ namespace SmartCharge.Core
            
 
             //look up for singles
-            for (var i = 0; i <= inputLenght; i++)
+            for (var i = 0; i < inputLenght; i++)
             {
                 var connector = (Connector)SortedConnectors[i];
                 var currentValue = connector.MaxCurrentAmps;
@@ -52,9 +52,9 @@ namespace SmartCharge.Core
 
             //look up for pairs
 
-            for (var i = 0; i <= inputLenght-1; i++)
+            for (var i = 0; i < inputLenght-1; i++)
             {
-                for (var j = i+1; j <= inputLenght; j++)
+                for (var j = i+1; j < inputLenght; j++)
                 {
                     var connectorI = (Connector)SortedConnectors[i];
                     var connectorJ = (Connector)SortedConnectors[j];

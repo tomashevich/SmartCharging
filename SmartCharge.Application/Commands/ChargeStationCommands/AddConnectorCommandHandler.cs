@@ -37,9 +37,18 @@ namespace SmartCharge.Application.Commands.ChargeStationCommands
 
             
             //add connector to station
-            chargeStation.AddConnector(command.ConnectorMaxCurrentAmps, command.ConnectorId);
+            var result = chargeStation.AddConnector(command.ConnectorMaxCurrentAmps, command.ConnectorId);
 
-    
+            if (result.IsError)
+            {
+                return new UpdateChargeStationDto
+                {
+                    IsError = true,
+                    ErrorMessage = "ChargeGroup capacity exceeded. You can unplug these connectors:",
+                    ConnectorsToUnplug = result.Suggestions
+
+                };
+            }
 
             await _stationRepository.UpdateConnectorsAsync(chargeStation).ConfigureAwait(false);
 
