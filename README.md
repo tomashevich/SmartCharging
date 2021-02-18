@@ -2,11 +2,11 @@
 Tech assignment
 
 System requirements:
-.Net core 3.1
-MongoDB
+.Net core 3.1,
+MongoDB,
 iisexpress or higher
 
-Visual Studio 2019
+Visual Studio 2019,
 Internet conection
 
 Getting Started
