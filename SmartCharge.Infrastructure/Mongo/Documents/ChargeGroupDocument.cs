@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace SmartCharge.Infrastructure.Mongo.Documents
 {
-    internal sealed class ChargeGroupDocument
+    public sealed class ChargeGroupDocument
     {
         [BsonId]
         public string Id { get; set; }

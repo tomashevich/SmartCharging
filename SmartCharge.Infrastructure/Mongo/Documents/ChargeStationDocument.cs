@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SmartCharge.Infrastructure.Mongo.Documents
 {
-    internal sealed class ChargeStationDocument
+    public sealed class ChargeStationDocument
     {
         [BsonId]
         public string Id { get; set; }

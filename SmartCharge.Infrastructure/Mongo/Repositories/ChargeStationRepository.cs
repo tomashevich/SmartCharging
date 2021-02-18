@@ -5,20 +5,20 @@ using MongoDB.Driver;
 using SmartCharge.Core.Entities;
 using SmartCharge.Core.Repositories;
 using SmartCharge.Infrastructure.Mongo.Documents;
+using SmartCharge.Infrastructure.Mongo.Repositories.Persistence;
 
 namespace SmartCharge.Infrastructure.Mongo.Repositories
 {
-    internal sealed class ChargeStationRepository : IChargeStationRepository
+    public sealed class ChargeStationRepository : IChargeStationRepository
     {
         private readonly IMongoCollection<ChargeStationDocument> _chargeStationDocuments;
         private readonly IMongoCollection<ChargeGroupDocument> _chargeGroupsDocuments;
-        public ChargeStationRepository(IDatabaseSettings settings)
+        private readonly IMongoDbContext _dbContext;
+        public ChargeStationRepository(IMongoDbContext dbContext)
         {
-            var client = new MongoClient(settings.ConnectionString);
-            var database = client.GetDatabase(settings.DatabaseName);
-
-            _chargeGroupsDocuments = database.GetCollection<ChargeGroupDocument>(settings.ChargeGroupCollectionName);
-            _chargeStationDocuments = database.GetCollection<ChargeStationDocument>(settings.ChargeStationCollectionName);
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _chargeGroupsDocuments = _dbContext.ChargeGroupsAsync();
+            _chargeStationDocuments = _dbContext.ChargeStationsAsync();
         }
 
         public async Task AddAsync(ChargeStation chargeStation)

@@ -2,24 +2,24 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Driver;
+using SmartCharging.Persistence;
 using SmartCharge.Core.Entities;
 using SmartCharge.Core.Repositories;
 using SmartCharge.Infrastructure.Mongo.Documents;
+using SmartCharge.Infrastructure.Mongo.Repositories.Persistence;
 
 namespace SmartCharge.Infrastructure.Mongo.Repositories
 {
-    internal sealed class ChargeGroupRepository : IChargeGroupRepository
+    public sealed class ChargeGroupRepository : IChargeGroupRepository
     {
         private readonly IMongoCollection<ChargeGroupDocument> _chargeGroupsDocuments;
         private readonly IMongoCollection<ChargeStationDocument> _chargeStationDocuments;
-
-        public ChargeGroupRepository(IDatabaseSettings settings)
+        private readonly IMongoDbContext _dbContext;
+        public ChargeGroupRepository(IMongoDbContext dbContext)
         {
-            var client = new MongoClient(settings.ConnectionString);
-            var database = client.GetDatabase(settings.DatabaseName);
-
-            _chargeGroupsDocuments = database.GetCollection<ChargeGroupDocument>(settings.ChargeGroupCollectionName);
-            _chargeStationDocuments = database.GetCollection<ChargeStationDocument>(settings.ChargeStationCollectionName);
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _chargeGroupsDocuments = _dbContext.ChargeGroupsAsync();
+            _chargeStationDocuments = _dbContext.ChargeStationsAsync();
         }
 
         public async Task<ChargeGroup> GetAsync(Guid chargeGroupId)

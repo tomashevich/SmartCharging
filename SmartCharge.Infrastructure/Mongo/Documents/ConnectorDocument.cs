@@ -1,6 +1,6 @@
 namespace SmartCharge.Infrastructure.Mongo.Documents
 {
-    internal sealed class ConnectorDocument
+    public sealed class ConnectorDocument
     {
         public int Id { get; set; }
         public decimal MaxCurrentAmps { get; set; }

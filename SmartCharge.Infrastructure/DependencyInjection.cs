@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SmartCharge.Core.Repositories;
 using SmartCharge.Infrastructure.Mongo.Repositories;
+using SmartCharge.Infrastructure.Mongo.Repositories.Persistence;
 
 namespace Infrastructure
 {
@@ -11,6 +12,7 @@ namespace Infrastructure
         {        
             services.AddTransient<IChargeGroupRepository, ChargeGroupRepository>();
             services.AddTransient<IChargeStationRepository, ChargeStationRepository>();
+            services.AddTransient<IMongoDbContext, MongoDbContext>();
             return services;
         }
     }
