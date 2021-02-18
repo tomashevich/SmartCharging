@@ -69,7 +69,7 @@ namespace SmartCharge.UnitTests
         }
 
         [Fact]
-        public void AddChargeStation_should_return_suggestions_if_capacity_reserve_esceeded()
+        public void AddChargeStation_should_return_suggestions_if_capacity_reserve_exceeded()
         {
             //Arrange
             decimal capacity = 10;
