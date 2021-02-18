@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SmartCharge.Core.Entities
+﻿namespace SmartCharge.Core.Entities
 {
     public static class Const
     {

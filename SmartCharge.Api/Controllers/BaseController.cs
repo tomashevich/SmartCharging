@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Presentation.Controllers
+namespace SmartCharge.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

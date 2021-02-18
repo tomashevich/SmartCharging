@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SmartCharge.Application.Commands.ChargeGroupCommands;
 using SmartCharge.Application.Commands.ChargeStationCommands;
-using SmartCharge.Application.Queries;
+using System;
+using System.Threading.Tasks;
 
-namespace Presentation.Controllers
+namespace SmartCharge.Api.Controllers
 {
     public class ChargeStationController : BaseController
     {
-
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<IEnumerable<GetChargeStationDto>>> GetChargeStation(Guid id)
+        public async Task<ActionResult<GetChargeStationDto>> GetChargeStation(Guid id)
         {
-            var response = await Mediator.Send(new GetChargeStationQuery{ Id = id});
+            var response = await Mediator.Send(new GetChargeStationQuery { Id = id });
 
             return Ok(response);
         }
@@ -29,32 +26,41 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(CreateChargeStation), response);
         }
 
-
         [HttpPost]
         [Route("{id}/change-name")]
-        public async Task<ActionResult<IEnumerable<UpdateChargeStationDto>>> UpdateChargeStationName(Guid id, [FromBody] UpdateChargeStationNameRequest request)
+        public async Task<ActionResult<UpdateChargeStationDto>> UpdateChargeStationName(Guid id,
+            [FromBody] UpdateChargeStationNameRequest request)
         {
-            var response = await Mediator.Send(new UpdateChargeStationNameCommand { Id = id, Name = request.Name });
+            var response = await Mediator.Send(
+                new UpdateChargeStationNameCommand
+                {
+                    Id = id,
+                    Name = request.Name
+                });
 
             return Ok(response);
         }
 
         [HttpPost]
         [Route("{id}/add-connector")]
-        public async Task<ActionResult<IEnumerable<UpdateChargeStationDto>>> AddConnector(Guid id, [FromBody] ConnectorRequest request)
+        public async Task<ActionResult<UpdateChargeStationDto>> AddConnector(Guid id,
+            [FromBody] ConnectorRequest request)
         {
             var response = await Mediator.Send(
-                new AddConnectorCommand { 
-                    ChargeStationId = id, 
-                    ConnectorId = request.ConnectorId, 
-                    ConnectorMaxCurrentAmps = request.MaxCurrentAmps });
+                new AddConnectorCommand
+                {
+                    ChargeStationId = id,
+                    ConnectorId = request.ConnectorId,
+                    ConnectorMaxCurrentAmps = request.MaxCurrentAmps
+                });
 
             return Ok(response);
         }
 
         [HttpPost]
         [Route("{id}/change-connector")]
-        public async Task<ActionResult<UpdateChargeStationDto>> ChangeConnector(Guid id, [FromBody] ConnectorRequest request)
+        public async Task<ActionResult<UpdateChargeStationDto>> ChangeConnector(Guid id,
+            [FromBody] ConnectorRequest request)
         {
             var response = await Mediator.Send(
                 new UpdateConnectorCommand
@@ -63,13 +69,14 @@ namespace Presentation.Controllers
                     ConnectorId = request.ConnectorId,
                     ConnectorMaxCurrentAmps = request.MaxCurrentAmps
                 });
-          
+
             return Ok(response);
         }
 
         [HttpPost]
         [Route("{id}/change-group")]
-        public async Task<ActionResult<IEnumerable<UpdateChargeStationDto>>> ChangeGroup(Guid id, [FromBody] ChangeGroupRequest request)
+        public async Task<ActionResult<UpdateChargeStationDto>> ChangeGroup(Guid id,
+            [FromBody] ChangeGroupRequest request)
         {
             var response = await Mediator.Send(
                 new ChangeGroupCommand
@@ -83,7 +90,7 @@ namespace Presentation.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<ActionResult<bool> >DeleteChargeStation(Guid id)
+        public async Task<ActionResult<bool>> DeleteChargeStation(Guid id)
         {
             var response = await Mediator.Send(new DeleteChargeStationCommand { Id = id });
 

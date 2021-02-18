@@ -9,21 +9,16 @@ namespace SmartCharge.Core.Entities
     public class ChargeGroup : AggregateRoot
     {
         private ISet<ChargeStation> _chargeStations = new HashSet<ChargeStation>();
-
         public string Name { get; set; }
-
         public decimal CapacityAmps { get; set; }
-
         public decimal CapacityReserve
         {
             get
             {
-                return CapacityAmps - _chargeStations.Aggregate(0m, (total, next) => total + next.MaxCurrentAmps, total => total);
+                return CapacityAmps - _chargeStations.Aggregate(
+                    0m, (total, next) => total + next.MaxCurrentAmps, total => total);
             }
         }
-
-    
-
         public IEnumerable<ChargeStation> ChargeStations
         {
             get => _chargeStations;
@@ -36,7 +31,6 @@ namespace SmartCharge.Core.Entities
             Name = NameGuard(name);
             CapacityAmps = CapacityGuard(capacityAmps);
             ChargeStations = chargeStations ?? new List<ChargeStation>();
-
         }
 
         public static ChargeGroup Create(Guid id, string name, decimal capacityAmps, IEnumerable<ChargeStation> chargeStations)
@@ -48,7 +42,7 @@ namespace SmartCharge.Core.Entities
 
         public OperationResult Update(string name, decimal capacityAmps)
         {
-            var result = new OperationResult { IsError = false };
+            var result = Success();
             Name = NameGuard(name);
 
             if (capacityAmps != CapacityAmps)
@@ -60,38 +54,25 @@ namespace SmartCharge.Core.Entities
             return result;
         }
 
-
         public OperationResult UpdateCapacity(decimal newCapacityAmps)
         {
-            //todo: check if possible in case of reducing
             var capacityReducedOnAmps = CapacityAmps - newCapacityAmps;
-
             var needCheck = capacityReducedOnAmps > 0;
             if (needCheck)
             {
                 if (CapacityReserve > capacityReducedOnAmps)
                 {
                     CapacityAmps = CapacityGuard(newCapacityAmps);
-                    return new OperationResult
-                    {
-                        IsError = false
-                    };
+                    return Success();
                 }
                 else
                 {
-                    return new OperationResult
-                    {
-                        IsError = true,
-                        Suggestions = new Algo().FindOptions(this, capacityReducedOnAmps - CapacityReserve)
-                    };
+                    return FindSuggestions(capacityReducedOnAmps);
                 }
             }
 
             CapacityAmps = CapacityGuard(newCapacityAmps);
-            return new OperationResult
-            {
-                IsError = false
-            };
+            return Success();
         }
 
         public OperationResult AddChargeStation(ChargeStation chargeStation)
@@ -102,28 +83,20 @@ namespace SmartCharge.Core.Entities
                 chargeStation.ParentChargeGroup = this;
                 AddEvent(new ChargeGroupUpdated(this));
 
-                return new OperationResult
-                {
-                    IsError = false
-                };
+                return Success();
             }
             else
             {
-                return new OperationResult
-                {
-                    IsError = true,
-                    Suggestions = new Algo().FindOptions(this, chargeStation.MaxCurrentAmps - CapacityReserve)
-                };
+                return FindSuggestions(chargeStation.MaxCurrentAmps);
             }
         }
+
         public void RemoveChargeStation(Guid chargeStationId)
         {
-
             var toRemove = _chargeStations.First(x => x.Id == chargeStationId);
             _chargeStations.Remove(toRemove);
 
             AddEvent(new ChargeGroupUpdated(this));
-
         }
 
         public void Delete()
@@ -152,6 +125,22 @@ namespace SmartCharge.Core.Entities
                 throw new InvalidChargeGroupCapacity();
             }
             return capacityAmps;
+        }
+        private OperationResult FindSuggestions(decimal capacityReducedOnAmps)
+        {
+            return new OperationResult
+            {
+                IsError = true,
+                Suggestions = new Algo().FindOptions(this, capacityReducedOnAmps - CapacityReserve)
+            };
+        }
+
+        private static OperationResult Success()
+        {
+            return new OperationResult
+            {
+                IsError = false
+            };
         }
     }
 }

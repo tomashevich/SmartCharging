@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 
 namespace SmartCharge.Application.Commands.ChargeStationCommands
 {
-
-    internal sealed class AddChargeStationCommandHandler : IRequestHandler<AddChargeStationCommand, AddChargeStationDto>
+    internal sealed class AddChargeStationCommandHandler
+        : IRequestHandler<AddChargeStationCommand, AddChargeStationDto>
     {
         private readonly IChargeGroupRepository _groupRepository;
-
         private readonly IChargeStationRepository _stationRepository;
         private readonly IMapper _mapper;
 
-        public AddChargeStationCommandHandler(IChargeGroupRepository groupRepository, IChargeStationRepository stationRepository, IMapper mapper)
+        public AddChargeStationCommandHandler(IChargeGroupRepository groupRepository,
+            IChargeStationRepository stationRepository, IMapper mapper)
         {
             _groupRepository = groupRepository;
             _stationRepository = stationRepository;
@@ -31,43 +31,30 @@ namespace SmartCharge.Application.Commands.ChargeStationCommands
                 throw new ChargeStationAlreadyExistException(command.Id);
             }
 
-            //fetch existed stations and pass to entity
-            var chargeGroup = await _groupRepository.GetAsyncExtended(command.ChargeGroupId);
-
+            var chargeGroup = await _groupRepository.GetAsyncExtended(command.ChargeGroupId).ConfigureAwait(false);
             if (chargeGroup == null)
             {
                 throw new ChargeGroupNotFoundException(command.ChargeGroupId);
             }
 
-            //create station
-
-            var chargeStation = ChargeStation.Create( command.Id, command.Name,  chargeGroup);
-
-            //add station to group
-
+            var chargeStation = ChargeStation.Create(command.Id, command.Name, chargeGroup);
             chargeGroup.AddChargeStation(chargeStation);
-            //add connector to station
-            var result = chargeStation.AddConnector(command.ConnectorMaxCurrentAmps, command.ConnectorId);
 
+            var result = chargeStation.AddConnector(command.ConnectorMaxCurrentAmps, command.ConnectorId);
             if (result.IsError)
             {
                 return new AddChargeStationDto
                 {
                     IsError = true,
                     ErrorMessage = "ChargeGroup capacity exceeded. You can unplug these connectors:",
-                    ConnectorsToUnplug = result.Suggestions.ToResultString()
+                    ConnectorsToUnplug = result.Suggestions.ToResultStrings()
                 };
             }
 
-            //save to db
-
             await _stationRepository.AddAsync(chargeStation).ConfigureAwait(false);
-                await _groupRepository.UpdateAsync(chargeGroup).ConfigureAwait(false);
-            //todo: what about revert changes after fail
-            
+            await _groupRepository.UpdateAsync(chargeGroup).ConfigureAwait(false);
 
             return _mapper.Map<AddChargeStationDto>(chargeStation);
         }
-              
     }
 }

@@ -10,6 +10,5 @@ namespace SmartCharge.Infrastructure.Mongo.Documents
         public string Name { get; set; }
         public IEnumerable<ConnectorDocument> Connectors { get; set; }
         public string ChargeGroupId { get; set; }
-       
     }
 }

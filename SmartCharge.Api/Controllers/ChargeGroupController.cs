@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SmartCharge.Application.Commands.ChargeGroupCommands;
-
 using SmartCharge.Application.Queries;
+using System;
+using System.Threading.Tasks;
 
-namespace Presentation.Controllers
+namespace SmartCharge.Api.Controllers
 {
     public class ChargeGroupController : BaseController
     {
-
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<IEnumerable<GetChargeGroupDto>>> GetChargeGroup(Guid id)
+        public async Task<ActionResult<GetChargeGroupDto>> GetChargeGroup(Guid id)
         {
-            var response = await Mediator.Send(new GetChargeGroupQuery{ Id = id});
+            var response = await Mediator.Send(new GetChargeGroupQuery { Id = id });
 
             return Ok(response);
         }
@@ -32,16 +29,22 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [Route("{id}")]
-        public async Task<ActionResult<IEnumerable<UpdateChargeGroupDto>>> UpdateChargeGroup(Guid id, [FromBody] UpdateChargeGroupRequest request)
+        public async Task<ActionResult<UpdateChargeGroupDto>> UpdateChargeGroup(Guid id, 
+            [FromBody] UpdateChargeGroupRequest request)
         {
-            var response = await Mediator.Send(new UpdateChargeGroupCommand { Id = id, Name = request.Name, Capacity= request.CapacityAmps});
+            var response = await Mediator.Send(new UpdateChargeGroupCommand
+            {
+                Id = id,
+                Name = request.Name,
+                Capacity = request.CapacityAmps
+            });
 
             return Ok(response);
         }
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<ActionResult<bool> >DeleteChargeGroup(Guid id)
+        public async Task<ActionResult<bool>> DeleteChargeGroup(Guid id)
         {
             var response = await Mediator.Send(new DeleteChargeGroupCommand { Id = id });
 

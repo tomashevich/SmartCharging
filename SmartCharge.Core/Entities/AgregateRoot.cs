@@ -1,8 +1,6 @@
 ﻿using SmartCharge.Core.Events;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SmartCharge.Core.Entities
 {
@@ -13,9 +11,8 @@ namespace SmartCharge.Core.Entities
         public Guid Id { get; protected set; }
 
         protected void AddEvent(IDomainEvent @event)
-        {            
-               
-                _events.Add(@event);
+        {
+            _events.Add(@event);
         }
 
         public void ClearEvents() => _events.Clear();

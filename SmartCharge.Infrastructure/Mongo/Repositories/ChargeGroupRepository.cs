@@ -1,18 +1,15 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-
 using MongoDB.Driver;
 using SmartCharge.Core.Entities;
 using SmartCharge.Core.Repositories;
-using SmartCharge.Infrastructure.Mongo;
 using SmartCharge.Infrastructure.Mongo.Documents;
 
 namespace SmartCharge.Infrastructure.Mongo.Repositories
 {
     internal sealed class ChargeGroupRepository : IChargeGroupRepository
     {
-
         private readonly IMongoCollection<ChargeGroupDocument> _chargeGroupsDocuments;
         private readonly IMongoCollection<ChargeStationDocument> _chargeStationDocuments;
 
@@ -27,29 +24,27 @@ namespace SmartCharge.Infrastructure.Mongo.Repositories
 
         public async Task<ChargeGroup> GetAsync(Guid chargeGroupId)
         {
-            var result = await _chargeGroupsDocuments.FindAsync(x => x.Id == chargeGroupId.ToString()).ConfigureAwait(false);
+            var result = await _chargeGroupsDocuments.FindAsync(g => g.Id == chargeGroupId.ToString()).ConfigureAwait(false);
             return result.FirstOrDefault()?.AsEntity();
         }
 
         public async Task<ChargeGroup> GetAsyncExtended(Guid chargeGroupId)
         {
-            var groupsCursor = await _chargeGroupsDocuments.FindAsync(x => x.Id == chargeGroupId.ToString()).ConfigureAwait(false);
-            var stationsCursor = await _chargeStationDocuments.FindAsync(x => x.ChargeGroupId == chargeGroupId.ToString()).ConfigureAwait(false);
+            var groupsCursor = await _chargeGroupsDocuments.FindAsync(g => g.Id == chargeGroupId.ToString()).ConfigureAwait(false);
+            var stationsCursor = await _chargeStationDocuments.FindAsync(s => s.ChargeGroupId == chargeGroupId.ToString()).ConfigureAwait(false);
             var groupDocument = groupsCursor.FirstOrDefault();
-            return groupDocument?.AsEntityExtended(stationsCursor.ToEnumerable().Select(x => x.AsEntityExtended(groupDocument?.AsEntity() )));
-          
+            return groupDocument?.AsEntityExtended(stationsCursor.ToEnumerable().Select(s => s.AsEntityExtended(groupDocument?.AsEntity())));
         }
+
         public async Task<bool> ExistsAsync(Guid chargeGroupId)
         {
-            var result = await _chargeGroupsDocuments.FindAsync(rec => rec.Id == chargeGroupId.ToString()).ConfigureAwait(false);
+            var result = await _chargeGroupsDocuments.FindAsync(g => g.Id == chargeGroupId.ToString()).ConfigureAwait(false);
             return result.Any();
         }
 
         public async Task AddAsync(ChargeGroup chargeGroup)
         {
-
-           await  _chargeGroupsDocuments.InsertOneAsync(chargeGroup.AsDocument()).ConfigureAwait(false);
-           
+            await _chargeGroupsDocuments.InsertOneAsync(chargeGroup.AsDocument()).ConfigureAwait(false);
         }
 
         public async Task UpdateAsync(ChargeGroup chargeGroup)
@@ -59,29 +54,14 @@ namespace SmartCharge.Infrastructure.Mongo.Repositories
                     Builders<ChargeGroupDocument>.Update
                     .Set(rec => rec.Name, chargeGroup.Name)
                     .Set(rec => rec.CapacityAmps, chargeGroup.CapacityAmps)
-                    .Set(rec => rec.ChargeStations, chargeGroup.ChargeStations.Select(c => c.Id.ToString())),
-                    options: new FindOneAndUpdateOptions<ChargeGroupDocument>
-                    {
-                        ReturnDocument = ReturnDocument.After
-                    }
+                    .Set(rec => rec.ChargeStations, chargeGroup.ChargeStations.Select(c => c.Id.ToString()))
                 ).ConfigureAwait(false);
         }
 
-        public async Task <long> DeleteAsync(Guid chargeGroupId)
+        public async Task<long> DeleteAsync(Guid chargeGroupId)
         {
-            var result = await _chargeGroupsDocuments.DeleteOneAsync(x => x.Id == chargeGroupId.ToString()).ConfigureAwait(false);
+            var result = await _chargeGroupsDocuments.DeleteOneAsync(g => g.Id == chargeGroupId.ToString()).ConfigureAwait(false);
             return result.DeletedCount;
         }
-
-
-
-
-
-        //public Task UpdateAsync(Resource resource)
-        //    => _repository.Collection.ReplaceOneAsync(r => r.Id == resource.Id && r.Version < resource.Version,
-        //        resource.AsDocument());
-
-        //public Task DeleteAsync(AggregateId id)
-        //    => _repository.DeleteAsync(id);
     }
 }

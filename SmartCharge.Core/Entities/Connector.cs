@@ -1,15 +1,11 @@
 ﻿using SmartCharge.Core.Exceptions;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SmartCharge.Core.Entities
 {
     public class Connector
     {
-        
         public int Id { get; set; }
-        //public int MaxCurrentMilliAmps { get; set; }
         public decimal MaxCurrentAmps { get; set; }
         public Guid ParentChargeStationId { get; }
 

@@ -2,18 +2,15 @@
 using MediatR;
 using SmartCharge.Application.Exceptions;
 using SmartCharge.Core;
-using SmartCharge.Core.Entities;
 using SmartCharge.Core.Repositories;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SmartCharge.Application.Commands.ChargeStationCommands
 {
-
     internal sealed class ChangeGroupCommandHandler : IRequestHandler<ChangeGroupCommand, UpdateChargeStationDto>
     {
         private readonly IChargeGroupRepository _groupRepository;
-
         private readonly IChargeStationRepository _stationRepository;
         private readonly IMapper _mapper;
 
@@ -26,14 +23,12 @@ namespace SmartCharge.Application.Commands.ChargeStationCommands
 
         public async Task<UpdateChargeStationDto> Handle(ChangeGroupCommand command, CancellationToken cancellationToken)
         {
-            //find station
             var chargeStation = await _stationRepository.GetAsyncExtended(command.ChargeStationId).ConfigureAwait(false);
             if (chargeStation == null)
             {
                 throw new ChargeStationNotFoundException(command.ChargeStationId);
             }
 
-            //find new group
             var newGroup = await _groupRepository.GetAsyncExtended(command.ChargeGroupId).ConfigureAwait(false);
             if (newGroup == null)
             {
@@ -41,27 +36,23 @@ namespace SmartCharge.Application.Commands.ChargeStationCommands
             }
 
             var oldGroupId = chargeStation.ParentChargeGroup.Id;
-            var result = newGroup.AddChargeStation(chargeStation);
 
+            var result = newGroup.AddChargeStation(chargeStation);
             if (result.IsError)
             {
                 return new UpdateChargeStationDto
                 {
                     IsError = true,
                     ErrorMessage = "ChargeGroup capacity exceeded. You can unplug these connectors:",
-                    ConnectorsToUnplug = result.Suggestions.ToResultString()
+                    ConnectorsToUnplug = result.Suggestions.ToResultStrings()
                 };
             }
 
-            //find old group
             var oldGroup = await _groupRepository.GetAsyncExtended(oldGroupId).ConfigureAwait(false);
-
-            //delete from old group
             if (oldGroup == null)
             {
                 throw new ChargeGroupNotFoundException(oldGroupId);
             }
-
             oldGroup.RemoveChargeStation(chargeStation.Id);
 
             await _stationRepository.UpdateChargeGroupAsync(chargeStation.Id, chargeStation.ParentChargeGroup.Id).ConfigureAwait(false);
@@ -70,6 +61,5 @@ namespace SmartCharge.Application.Commands.ChargeStationCommands
 
             return _mapper.Map<UpdateChargeStationDto>(chargeStation);
         }
-              
     }
 }

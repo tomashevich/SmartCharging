@@ -8,39 +8,38 @@ using System.Threading.Tasks;
 
 namespace SmartCharge.Application.Commands.ChargeGroupCommands
 {
-
     internal sealed class UpdateChargeGroupCommandHandler : IRequestHandler<UpdateChargeGroupCommand, UpdateChargeGroupDto>
     {
-        private readonly IChargeGroupRepository _repository;
+        private readonly IChargeGroupRepository _chargeGrouprepository;
         private readonly IMapper _mapper;
 
-        public UpdateChargeGroupCommandHandler(IChargeGroupRepository repository, IMapper mapper)
+        public UpdateChargeGroupCommandHandler(IChargeGroupRepository chargeGrouprepository, IMapper mapper)
         {
-            _repository = repository;
+            _chargeGrouprepository = chargeGrouprepository;
             _mapper = mapper;
         }
 
         public async Task<UpdateChargeGroupDto> Handle(UpdateChargeGroupCommand command, CancellationToken cancellationToken)
         {
-            var resource = await _repository.GetAsyncExtended(command.Id);
-
-            if (resource == null)
+            var chargeGroup = await _chargeGrouprepository.GetAsyncExtended(command.Id).ConfigureAwait(false);
+            if (chargeGroup == null)
             {
                 throw new ChargeGroupNotFoundException(command.Id);
             }
-            var result = resource.Update( command.Name, command.Capacity);
+
+            var result = chargeGroup.Update(command.Name, command.Capacity);
             if (result.IsError)
             {
                 return new UpdateChargeGroupDto
                 {
                     IsError = true,
                     ErrorMessage = "ChargeGroup capacity exceeded. You can unplug these connectors:",
-                    ConnectorsToUnplug = result.Suggestions.ToResultString()
+                    ConnectorsToUnplug = result.Suggestions.ToResultStrings()
                 };
             }
-            await _repository.UpdateAsync(resource).ConfigureAwait(false);
-            return _mapper.Map<UpdateChargeGroupDto>(resource);
+
+            await _chargeGrouprepository.UpdateAsync(chargeGroup).ConfigureAwait(false);
+            return _mapper.Map<UpdateChargeGroupDto>(chargeGroup);
         }
-              
     }
 }

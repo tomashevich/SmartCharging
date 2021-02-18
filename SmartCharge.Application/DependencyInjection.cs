@@ -1,7 +1,7 @@
-﻿using System.Reflection;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace Application
 {

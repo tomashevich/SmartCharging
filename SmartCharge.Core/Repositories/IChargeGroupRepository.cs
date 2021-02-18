@@ -1,13 +1,10 @@
 ﻿using SmartCharge.Core.Entities;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SmartCharge.Core.Repositories
 {
-   
-     public interface IChargeGroupRepository
+    public interface IChargeGroupRepository
     {
         Task<ChargeGroup> GetAsync(Guid chargeGroupId);
         Task<ChargeGroup> GetAsyncExtended(Guid chargeGroupId);

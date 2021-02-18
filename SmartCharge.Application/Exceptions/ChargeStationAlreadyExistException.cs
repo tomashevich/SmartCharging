@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SmartCharge.Application.Exceptions
 {
-    
     public class ChargeStationAlreadyExistException : AppException
     {
         public override string Code { get; } = "charge_station_already_exists";

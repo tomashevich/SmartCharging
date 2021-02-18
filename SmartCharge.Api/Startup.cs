@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using SmartCharge.Infrastructure.Mongo;
 
-namespace Presentation
+namespace SmartCharge.Api
 {
     public class Startup
     {
@@ -25,7 +25,6 @@ namespace Presentation
             services.AddApplication();
             services.AddInfrastructure(Configuration);
 
-            // requires using Microsoft.Extensions.Options
             services.Configure<DatabaseSettings>(
                 Configuration.GetSection(nameof(DatabaseSettings)));
 
@@ -35,9 +34,9 @@ namespace Presentation
 
             services.AddSwaggerGen(config =>
             {
-                config.SwaggerDoc("v1", new OpenApiInfo() {Title = "Smart Charge", Version = "v1"});
+                config.SwaggerDoc("v1", new OpenApiInfo() { Title = "Smart Charge", Version = "v1" });
             });
-            
+
             services.AddRouting(options =>
             {
                 options.LowercaseUrls = true;
@@ -59,7 +58,7 @@ namespace Presentation
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-            
+
             app.UseSwagger();
 
             app.UseSwaggerUI(config => config.SwaggerEndpoint("/swagger/v1/swagger.json", "Smart Charge v1"));
